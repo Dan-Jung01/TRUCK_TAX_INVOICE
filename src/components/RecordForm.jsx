@@ -12,8 +12,9 @@ export default function RecordForm({ editItem, onCancelEdit }) {
     name: '',
     phone: '',
     account: '',
-    bank: '', // ✅ 새 필드: 은행명
+    bank: '',
     memo: '',
+    destination: '',
     supplyAmount: '',
     qty: '',
     paidDate: '',
@@ -37,8 +38,9 @@ export default function RecordForm({ editItem, onCancelEdit }) {
         account: editItem.account || '',
         bank: editItem.bank || '', // ✅ 기존 데이터 로드
         memo: editItem.memo || '',
+        destination: editItem.destination || '',
         supplyAmount: editItem.supplyAmount ? editItem.supplyAmount.toLocaleString() : '',
-        qty: editItem.qty || '',
+        qty: editItem.qty ? editItem.qty.toLocaleString() : '',
         paidDate: editItem.paidDate
           ? new Date(editItem.paidDate).toISOString().slice(0, 10)
           : '',
@@ -52,7 +54,7 @@ export default function RecordForm({ editItem, onCancelEdit }) {
   }, [editItem])
 
   const supply = Number(form.supplyAmount.replace(/,/g, '') || 0)
-  const qty = Number(form.qty || 0)
+  const qty = Number((form.qty || '').toString().replace(/,/g, '') || 0)
   const tax = useMemo(() => Math.floor(supply * 0.1), [supply])
   const total = useMemo(() => supply + tax, [supply, tax])
   const unitFare = useMemo(() => (qty > 0 ? Math.floor(supply / qty) : 0), [supply, qty])
@@ -60,7 +62,7 @@ export default function RecordForm({ editItem, onCancelEdit }) {
 
   const onChange = (e) => {
     const { name, value } = e.target
-    if (name === 'supplyAmount') {
+    if (name === 'supplyAmount' || name === 'qty') {
       const numeric = value.replace(/[^0-9]/g, '')
       setForm((prev) => ({ ...prev, [name]: formatNumber(numeric) }))
     } else {
@@ -175,8 +177,7 @@ export default function RecordForm({ editItem, onCancelEdit }) {
         </Grid>
         <Grid item xs={12} sm={4}>
           <TextField
-            label="출고 수량 (켤레) *"
-            type="number"
+            label="출고 수량 (결레) *"
             name="qty"
             value={form.qty}
             onChange={onChange}
