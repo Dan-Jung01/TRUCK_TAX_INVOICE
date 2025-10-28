@@ -92,7 +92,7 @@ export default function RecordList({ onSelectEdit, selectedId }) {
         </Stack>
 
         {/* 필터 영역 */}
-        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap sx={{rowGap: 2}}>
           <TextField
             label="출고 시작일"
             name="startDate"
