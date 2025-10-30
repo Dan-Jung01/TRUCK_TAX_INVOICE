@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { CssBaseline, Container, Box, Typography, Paper } from '@mui/material'
 import RecordForm from './components/RecordForm'
 import RecordList from './components/RecordList'
+import RecordStats from './components/RecordStats'
+import MonthlyReport from './components/MonthlyReport'
 
 export default function App() {
   const [editItem, setEditItem] = useState(null)
@@ -23,10 +25,14 @@ export default function App() {
           </Paper>
 
           <Box sx={{ mt: 6, mb: 8 }}>
-            <RecordList
-              onSelectEdit={(item) => setEditItem(item)}  // ✅ 카드 클릭 시 선택
-              selectedId={editItem?.id || null}           // ✅ 선택된 카드 강조
-            />
+            <RecordList onSelectEdit={(item) => setEditItem(item)} selectedId={editItem?.id || null} />
+          </Box>
+
+          {/* ✅ 월별 통계 섹션 추가 */}
+          <RecordStats />
+
+          <Box sx={{ mt: 8 }}>
+            <MonthlyReport />
           </Box>
 
           <Typography

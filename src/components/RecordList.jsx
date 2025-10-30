@@ -88,7 +88,10 @@ export default function RecordList({ onSelectEdit, selectedId }) {
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             기록 내역
           </Typography>
-          <FilterAltIcon color="primary" fontSize="small" />
+          {/* ✅ 현재 표시 중인 건수 출력 */}
+          <Typography variant="subtitle2" color="text.secondary">
+            (총 {filteredItems.length.toLocaleString()}건)
+          </Typography>
         </Stack>
 
         {/* 필터 영역 */}

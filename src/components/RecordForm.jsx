@@ -151,7 +151,7 @@ export default function RecordForm({ editItem, onCancelEdit }) {
         </Grid>
 
         <Grid item xs={12} sm={6}>
-          <TextField label="출고항목 (메모)" name="memo" value={form.memo} onChange={onChange} fullWidth />
+          <TextField label="제품명(오더명)" name="memo" value={form.memo} onChange={onChange} fullWidth />
         </Grid>
 
         <Grid item xs={12} sm={6}>
