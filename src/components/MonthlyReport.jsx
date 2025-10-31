@@ -41,14 +41,16 @@ export default function MonthlyReport() {
     setMonth(defaultMonth);
   }, []);
 
- // ✅ 월 변경 시 자동 필터링 + 정렬
+  // ✅ 월 변경 시 자동 필터링 + 정렬
   useEffect(() => {
     if (!month) return;
     const filteredData = records
       .filter((item) => {
         if (!item.shipDate) return false;
         const date = new Date(item.shipDate);
-        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        const key = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, "0")}`;
         return key === month;
       })
       .sort((a, b) => {
@@ -59,11 +61,6 @@ export default function MonthlyReport() {
 
     setFiltered(filteredData);
   }, [month, records]);
-
-  // ✅ 합계 계산
-  const totalAmount = filtered.reduce((sum, r) => sum + (r.total || 0), 0);
-  const totalQty = filtered.reduce((sum, r) => sum + (r.qty || 0), 0);
-  const avgFare = totalQty > 0 ? (totalAmount / totalQty).toFixed(2) : 0;
 
   const formatNumber = (n) =>
     n?.toLocaleString("ko-KR", { minimumFractionDigits: 0 });
@@ -102,7 +99,6 @@ export default function MonthlyReport() {
 
       <Divider sx={{ mb: 2 }} />
 
-      {/* ✅ 테이블 */}
       {filtered.length === 0 ? (
         <Typography color="text.secondary">
           조회된 데이터가 없습니다.
@@ -126,6 +122,7 @@ export default function MonthlyReport() {
                 <TableCell sx={{ fontWeight: 700 }}>비고</TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {filtered.map((r) => {
                 const date = r.shipDate
@@ -133,14 +130,12 @@ export default function MonthlyReport() {
                   : "-";
                 const unitFare =
                   r.qty && r.qty > 0
-                    ? ((r.total || 0) / r.qty).toFixed(2)
+                    ? ((r.supplyAmount || 0) / r.qty).toFixed(2)
                     : "-";
                 return (
                   <TableRow key={r.id}>
                     <TableCell>{date}</TableCell>
-                    <TableCell>
-                      {r.destination || "-"}
-                    </TableCell>
+                    <TableCell>{r.destination || "-"}</TableCell>
                     <TableCell align="right">
                       {formatNumber(r.supplyAmount || 0)}원
                     </TableCell>
@@ -152,30 +147,74 @@ export default function MonthlyReport() {
                   </TableRow>
                 );
               })}
+
+              {/* ✅ 합계 행 (같은 테이블 내부) */}
+              <TableRow sx={{ bgcolor: "#3f51b5" }}>
+                <TableCell sx={{ color: "white", fontWeight: 700 }}>
+                  월별 총 합계
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: "white", fontWeight: 700 }}
+                  align="left"
+                >
+                  총 {filtered.length.toLocaleString()}건
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: "white", fontWeight: 700 }}
+                  align="right"
+                >
+                  {formatNumber(
+                    filtered.reduce(
+                      (sum, r) => sum + (r.supplyAmount || 0),
+                      0
+                    )
+                  )}{" "}
+                  원
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: "white", fontWeight: 700 }}
+                  align="right"
+                >
+                  {formatNumber(
+                    filtered.reduce((sum, r) => sum + (r.qty || 0), 0)
+                  )}{" "}
+                  켤레
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: "white", fontWeight: 700 }}
+                  align="right"
+                >
+                  {(() => {
+                    const totalSupply = filtered.reduce(
+                      (sum, r) => sum + (r.supplyAmount || 0),
+                      0
+                    );
+                    const totalQty = filtered.reduce(
+                      (sum, r) => sum + (r.qty || 0),
+                      0
+                    );
+                    return totalQty > 0
+                      ? `${formatNumber(
+                          Math.round(totalSupply / totalQty)
+                        )} 원`
+                      : "0 원";
+                  })()}
+                </TableCell>
+
+                <TableCell
+                  sx={{ color: "white", fontWeight: 700 }}
+                  align="left"
+                >
+                  –
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
-      )}
-
-      {/* ✅ 합계 */}
-      {filtered.length > 0 && (
-        <Box
-          sx={{
-            bgcolor: "#3f51b5",
-            color: "white",
-            mt: 2,
-            py: 2,
-            borderRadius: 1,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="subtitle1" fontWeight={700}>
-            월별 총 합계:&nbsp;&nbsp;
-            {formatNumber(totalAmount)}원&nbsp;&nbsp;/&nbsp;&nbsp;
-            {formatNumber(totalQty)}켤레&nbsp;&nbsp;/&nbsp;&nbsp;
-            평균 {avgFare}원
-          </Typography>
-        </Box>
       )}
     </Paper>
   );
